@@ -1,0 +1,21 @@
+alias: "SCSTC North Cancellations"
+description: "Notify when North cancellations change from None, and when they change from Some to All. Uses the Cancelation North status sensor."
+trigger:
+  - platform: state
+    entity_id: sensor.scstc_cancelation_north_status
+condition:
+  - condition: template
+    value_template: >-
+      {% set old = trigger.from_state.state if trigger.from_state else none %}
+      {% set new = trigger.to_state.state if trigger.to_state else none %}
+      {% if old is none or new is none %}
+        false
+      {% else %}
+        {{ (old == 'None' and new != 'None') or (old == 'Some' and new == 'All') }}
+      {% endif %}
+action:
+  - service: notify.notify
+    data:
+      title: "North cancellations changed"
+      message: "North cancellation status changed from {{ trigger.from_state.state }} to {{ trigger.to_state.state }}."
+mode: single

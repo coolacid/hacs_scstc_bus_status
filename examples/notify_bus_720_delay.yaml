@@ -1,0 +1,22 @@
+alias: "SCSTC Bus 720 Delay Increase"
+description: "Notify when Bus 720 Delay increases (includes Action attribute)."
+trigger:
+  - platform: state
+    entity_id: sensor.scstc_bus_720_delay
+condition:
+  - condition: template
+    # Only proceed when both old and new states are numeric and new > old
+    value_template: >-
+      {% set old = trigger.from_state.state if trigger.from_state else none %}
+      {% set new = trigger.to_state.state if trigger.to_state else none %}
+      {% if old in (none, "") or new in (none, "") %}
+        false
+      {% else %}
+        {{ (old | float(0)) < (new | float(0)) }}
+      {% endif %}
+action:
+  - service: notify.notify
+    data:
+      title: "Bus 720 delay increased"
+      message: "Delay increased from {{ trigger.from_state.state }} to {{ trigger.to_state.state }}. Action: {{ state_attr('sensor.scstc_bus_720_delay','Action') }}"
+mode: single
