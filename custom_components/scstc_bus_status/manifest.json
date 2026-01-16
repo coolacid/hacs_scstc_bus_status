@@ -1,0 +1,10 @@
+{
+  "domain": "scstc_bus_status",
+  "name": "SCSTC Bus Status",
+  "version": "0.1.0",
+  "documentation": "https://example.com",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@coolacid"],
+  "config_flow": true
+}
