@@ -2,7 +2,7 @@
   "domain": "scstc_bus_status",
   "name": "SCSTC Bus Status",
   "version": "0.1.0",
-  "documentation": "https://example.com",
+  "documentation": "https://github.com/coolacid/hacs_scstc_bus_status",
   "requirements": [],
   "dependencies": [],
   "codeowners": ["@coolacid"],

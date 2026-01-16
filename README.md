@@ -11,13 +11,13 @@ Install (recommended)
 
 - Install with HACS (preferred):
 
-  [![Install via HACS](https://img.shields.io/badge/HACS-Install-brightgreen?logo=hacs)](https://github.com/your-github-username/scstc-bus-status)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=coolacid&repository=hacs_scstc_bus_status&category=integration)
 
   After adding the repository in HACS, go to HACS → Integrations → SCSTC Bus Status → Install.
 
 Install (manual)
 
-1. Copy the `custom_components/my_sensor/` folder into your Home Assistant `config/custom_components/` directory.
+1. Copy the `custom_components/scstc_bus_status/` folder into your Home Assistant `config/custom_components/` directory.
 2. Restart Home Assistant.
 
 Add the integration
