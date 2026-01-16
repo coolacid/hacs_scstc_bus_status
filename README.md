@@ -32,3 +32,7 @@ Usage notes
 Support
 - If you need help installing or configuring the integration, open an issue on the project repository.
 
+ 
+Disclaimer
+- This project is not endorsed or supported by any school board, nor the school bus consortium. It is an independent, community-developed integration provided "as-is" without any official affiliation. Use at your own risk.
+
