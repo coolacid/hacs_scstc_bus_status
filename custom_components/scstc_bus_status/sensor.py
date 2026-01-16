@@ -29,22 +29,40 @@ async def async_setup_entry(hass, entry, async_add_entities):
     This will create `status` and `note` sensors for each top-level key
     in the fetched JSON data.
     """
-    # Only create the existing status/note entities for Cancelation entries
-    if entry.data.get("type") != "Cancelation":
+    entry_type = entry.data.get("type")
+
+    if entry_type == "Cancelation":
+        coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+        data = coordinator.data or {}
+
+        entities: list[CoordinatorEntity] = []
+
+        for key in data.keys():
+            # sensor for status
+            entities.append(MySensorValue(coordinator, entry.entry_id, key, "status", "Cancelation"))
+            # sensor for note
+            entities.append(MySensorValue(coordinator, entry.entry_id, key, "note", "Cancelation"))
+
+        async_add_entities(entities, True)
         return
 
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    data = coordinator.data or {}
+    if entry_type == "Bus":
+        # For Bus entries, create sensors based on the keys of the provided last_data dict
+        ent_info = hass.data[DOMAIN].get(entry.entry_id)
+        if not ent_info:
+            return
+        last_data = ent_info.get("last_data") or []
+        sample = last_data[0] if last_data else {}
 
-    entities: list[CoordinatorEntity] = []
+        entities: list[CoordinatorEntity] = []
 
-    for key in data.keys():
-        # sensor for status
-        entities.append(MySensorValue(coordinator, entry.entry_id, key, "status", "Cancelation"))
-        # sensor for note
-        entities.append(MySensorValue(coordinator, entry.entry_id, key, "note", "Cancelation"))
+        busnum = str(entry.data.get("bus_number")) if entry.data.get("bus_number") is not None else None
 
-    async_add_entities(entities, True)
+        for field in sample.keys():
+            entities.append(BusFieldSensor(hass, entry.entry_id, busnum, field))
+
+        async_add_entities(entities, True)
+        return
 
 
 class MySensorValue(CoordinatorEntity, SensorEntity):
@@ -75,3 +93,48 @@ class MySensorValue(CoordinatorEntity, SensorEntity):
     def extra_state_attributes(self) -> dict:
         # expose the entire object under the key as attributes
         return self.coordinator.data.get(self._key, {})
+
+
+class BusFieldSensor(CoordinatorEntity, SensorEntity):
+    """Sensor for a single field from a Bus entry's data."""
+
+    def __init__(self, hass, entry_id: str, bus_number: str, field: str):
+        # Bus sensors use the shared bus coordinator
+        coordinator = hass.data[DOMAIN].get(entry_id, {}).get("coordinator")
+        super().__init__(coordinator)
+        self.hass = hass
+        self._entry_id = entry_id
+        self._bus_number = bus_number
+        self._field = field
+
+    @property
+    def name(self) -> str:
+        return f"SCSTC Bus {self._bus_number} {self._field}"
+
+    @property
+    def unique_id(self) -> str:
+        return f"scstc_{self._entry_id}_Bus_{self._bus_number}_{self._field}"
+
+    @property
+    def state(self):
+        ent_info = self.hass.data[DOMAIN].get(self._entry_id, {})
+        last_data = ent_info.get("last_data") or []
+        value = None
+        if last_data:
+            first = last_data[0]
+            value = first.get(self._field)
+            # Convert datetimes to ISO strings for state
+            if isinstance(value, (type(__import__("datetime").datetime.now()))):
+                try:
+                    value = value.isoformat()
+                except Exception:
+                    value = str(value)
+        return value
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        ent_info = self.hass.data[DOMAIN].get(self._entry_id, {})
+        last_data = ent_info.get("last_data") or []
+        if last_data:
+            return last_data[0]
+        return {}
