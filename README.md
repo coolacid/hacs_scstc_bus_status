@@ -23,10 +23,10 @@ Install (manual)
 Add the integration
 
 - Go to Settings → Devices & Services → Add Integration and search for "SCSTC Bus Status".
-- Choose the `type` you want: `Cancelation` (one only) or `Bus` (can add multiple). For `Bus`, you may provide a bus number.
+- Choose the `type` you want: `Cancelation` (one only) or `Bus` (can add multiple). For `Bus`, you must provide a bus number.
 
 Usage notes
-- Cancellation sensors appear as `sensor.scstc_<...>` and provide `status` and `note` values for each reported key.
+- Cancellation sensors appear as `sensor.scstc_<...>` and provide `status` and `note` values for each reported zone.
 - Bus notifications are retrieved when you add one or more `Bus` entries (by bus number).
 
 Support
