@@ -6,12 +6,12 @@ trigger:
 condition:
   - condition: template
     value_template: >-
-      {% set old = trigger.from_state.state if trigger.from_state else none %}
-      {% set new = trigger.to_state.state if trigger.to_state else none %}
+      {% set old = trigger.from_state.state.lower() if trigger.from_state else none %}
+      {% set new = trigger.to_state.state.lower() if trigger.to_state else none %}
       {% if old is none or new is none %}
         false
       {% else %}
-        {{ (old == 'None' and new != 'None') or (old == 'Some' and new == 'All') }}
+        {{ (old == 'none' and new != 'none') or (old == 'some' and new == 'all') }}
       {% endif %}
 action:
   - service: notify.notify
